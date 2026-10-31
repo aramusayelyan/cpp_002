@@ -224,7 +224,7 @@ int print_number_in_letters(Numbers *ob, char *num_str, int count1)
         {
             passable_num = get_number_with_zeros('1', c - 1);
             if (!passable_num)
-                return (0);
+            return (0);
             printable_num = find_value(ob, passable_num);
             first_num = get_number_with_zeros(num_str[index], 0);
             if (!first_num || !printable_num)
@@ -236,6 +236,7 @@ int print_number_in_letters(Numbers *ob, char *num_str, int count1)
             put_str(find_value(ob, first_num));
             put_str(" ");
             put_str(printable_num);
+       //     put_str(" and");
             put_str(" ");
             free(passable_num);
             free(first_num);
@@ -263,7 +264,6 @@ int print_number_in_letters(Numbers *ob, char *num_str, int count1)
                     free(passable_num);
                     return (0);
                 }
-
                 put_str(printable_num);
                 put_str(" ");
                 free(passable_num);
