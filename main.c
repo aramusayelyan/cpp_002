@@ -10,12 +10,15 @@ typedef struct Numbers{
      char    *value;
 }Numbers;
 
-void    put_str(char *str){
-	int i;
-
-	i = 0;
-    while (str[i] != '\0' ){
-        write(1,&str[i],1);
+void    put_str(char *str)
+{
+    int i;
+    if (!str)
+        return ;
+    i = 0;
+    while (str[i] != '\0')
+    {
+        write(1, &str[i], 1);
         i++;
     }
 }
@@ -160,97 +163,105 @@ char *get_number_with_zeros(char num, int zero_count)
     // printf("Final string: [%s]\n", str);
     return (str);
 }
-
-int print_number_in_letters(Numbers *ob, char *num_str, int count1)
+int	print_number_in_letters(Numbers *ob, char *num_str, int count1)
 {
-    int count;
-    int c;
-    int j;
-    int index;
-    char *passable_num;
-    char *first_num;
-    char *printable_num;
+	int		count;
+	int		c;
+	int		j;
+	int		index;
+	char	*passable_num;
+	char	*printable_num;
 
-
-    if(count1 == -1){
-        count = ft_strlen(num_str);
-        c = count;
-    }else{
-        count = count1;
-        c = count;
-    }
-
-    while (c > 0)
-    {
-        index = count - c;
-        if (num_str[index] == '0')
-        {
-            --c;
-            continue;
-        }
-        if (c <= 2)
-        {
-            if (c == 2 && num_str[index] == '1')
-            {
-                passable_num = malloc(3);
-                if (!passable_num)
-                    return (0);
-
-                passable_num[0] = '1';
-                passable_num[1] = num_str[index + 1];
-                passable_num[2] = '\0';
-                c--;
-            }
-            else
-            {
-                passable_num = get_number_with_zeros(num_str[index], c - 1);
-                if (!passable_num)
-                    return (0);
-            }
-
-            put_str(find_value(ob, passable_num));
-            put_str(" ");
-            free(passable_num);
-        }
-        else if(c <= 3)
-        {
-            passable_num = get_number_with_zeros('1', c - 1);
-            printable_num = find_value(ob, passable_num);
-            first_num = get_number_with_zeros(num_str[index], 0);
-            put_str(find_value(ob, first_num));
-            put_str(printable_num);
-        }
-      else
-{
-    j = c % 3;
-    if (j == 0)
-        j = 3;
-
-    print_number_in_letters(ob, &num_str[index], j);
-
-    c -= j;
-
-    if (c > 0)
-    {
-        passable_num = get_number_with_zeros('1', c - 1);
-        if (!passable_num)
-            return (0);
-
-        printable_num = find_value(ob, passable_num);
-        if (!printable_num)
-        {
-            free(passable_num);
-            return (0);
-        }
-
-        put_str(printable_num);
-        put_str(" ");
-        free(passable_num);
-    }
-}
-        c--;
-    }
-    return (1);
+	if (count1 == -1)
+	{
+		printable_num = find_value(ob, num_str);
+		if (printable_num)
+		{
+			put_str(printable_num);
+			return (1);
+		}
+		count = ft_strlen(num_str);
+	}
+	else
+		count = count1;
+	c = count;
+	while (c > 0)
+	{
+		index = count - c;
+		if (num_str[index] == '0')
+		{
+			c--;
+			continue ;
+		}
+		if (c > 3)
+		{
+			j = c % 3;
+			if (j == 0)
+				j = 3;
+			if (!print_number_in_letters(ob, &num_str[index], j))
+				return (0);
+			c -= j;
+			if (c > 0)
+			{
+				passable_num = get_number_with_zeros('1', c);
+				if (!passable_num)
+					return (0);
+                    
+				printable_num = find_value(ob, passable_num);
+				free(passable_num);
+				if (!printable_num)
+					return (0);
+				put_str(" ");
+				put_str(printable_num);
+				put_str(" ");
+			}
+			continue ;
+		}
+		if (c == 3)
+		{
+			passable_num = get_number_with_zeros(num_str[index], 0);
+			if (!passable_num)
+				return (0);
+			printable_num = find_value(ob, passable_num);
+			free(passable_num);
+			if (!printable_num)
+				return (0);
+			put_str(printable_num);
+			put_str(" ");
+			printable_num = find_value(ob, "100");
+			if (!printable_num)
+				return (0);
+			put_str(printable_num);
+			put_str(" ");
+		}
+		else
+		{
+			if (c == 2 && num_str[index] == '1')
+			{
+				passable_num = malloc(3);
+				if (!passable_num)
+					return (0);
+				passable_num[0] = '1';
+				passable_num[1] = num_str[index + 1];
+				passable_num[2] = '\0';
+				c--;
+			}
+			else
+			{
+				passable_num = get_number_with_zeros(num_str[index], c - 1);
+				if (!passable_num)
+					return (0);
+			}
+			printable_num = find_value(ob, passable_num);
+			free(passable_num);
+			if (!printable_num)
+				return (0);
+			put_str(printable_num);
+			put_str(" ");
+		}
+		c--;
+	}
+	return (1);
 }
 
 
