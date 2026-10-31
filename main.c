@@ -163,108 +163,133 @@ char *get_number_with_zeros(char num, int zero_count)
     // printf("Final string: [%s]\n", str);
     return (str);
 }
-int	print_number_in_letters(Numbers *ob, char *num_str, int count1)
-{
-	int		count;
-	int		c;
-	int		j;
-	int		index;
-	char	*passable_num;
-	char	*printable_num;
 
-	if (count1 == -1)
-	{
-		printable_num = find_value(ob, num_str);
-		if (printable_num)
-		{
-			put_str(printable_num);
-			return (1);
-		}
-		count = ft_strlen(num_str);
-	}
-	else
-		count = count1;
-	c = count;
-	while (c > 0)
-	{
-		index = count - c;
-		if (num_str[index] == '0')
-		{
-			c--;
-			continue ;
-		}
-		if (c > 3)
-		{
-			j = c % 3;
-			if (j == 0)
-				j = 3;
-			if (!print_number_in_letters(ob, &num_str[index], j))
-				return (0);
-			c -= j;
-			if (c > 0)
-			{
-				passable_num = get_number_with_zeros('1', c);
-				if (!passable_num)
-					return (0);
-                    
-				printable_num = find_value(ob, passable_num);
-				free(passable_num);
-				if (!printable_num)
-					return (0);
-				put_str(" ");
-				put_str(printable_num);
-				put_str(" ");
-			}
-			continue ;
-		}
-		if (c == 3)
-		{
-			passable_num = get_number_with_zeros(num_str[index], 0);
-			if (!passable_num)
-				return (0);
-			printable_num = find_value(ob, passable_num);
-			free(passable_num);
-			if (!printable_num)
-				return (0);
-			put_str(printable_num);
-			put_str(" ");
-			printable_num = find_value(ob, "100");
-			if (!printable_num)
-				return (0);
-			put_str(printable_num);
-			put_str(" ");
-		}
-		else
-		{
-			if (c == 2 && num_str[index] == '1')
-			{
-				passable_num = malloc(3);
-				if (!passable_num)
-					return (0);
-				passable_num[0] = '1';
-				passable_num[1] = num_str[index + 1];
-				passable_num[2] = '\0';
-				c--;
-			}
-			else
-			{
-				passable_num = get_number_with_zeros(num_str[index], c - 1);
-				if (!passable_num)
-					return (0);
-			}
-			printable_num = find_value(ob, passable_num);
-			free(passable_num);
-			if (!printable_num)
-				return (0);
-			put_str(printable_num);
-			put_str(" ");
-		}
-		c--;
-	}
-	return (1);
+int print_number_in_letters(Numbers *ob, char *num_str, int count1)
+{
+    int count;
+    int c;
+    int j;
+    int index;
+    char *passable_num;
+    char *first_num;
+    char *printable_num;
+
+    if(count1 == -1){
+        count = ft_strlen(num_str);
+        c = count;
+    }else{
+        count = count1;
+        c = count;
+    }
+
+    while (c > 0)
+    {
+        index = count - c;
+        if (num_str[index] == '0')
+        {
+            --c;
+            continue;
+        }
+        if (c <= 2)
+        {
+            if (c == 2 && num_str[index] == '1')
+            {
+                passable_num = malloc(3);
+                if (!passable_num)
+                    return (0);
+
+                passable_num[0] = '1';
+                passable_num[1] = num_str[index + 1];
+                passable_num[2] = '\0';
+                c--;
+            }
+            else
+            {
+                passable_num = get_number_with_zeros(num_str[index], c - 1);
+                if (!passable_num)
+                    return (0);
+            }
+
+            printable_num = find_value(ob, passable_num);
+            if (!printable_num)
+            {
+                free(passable_num);
+                return (0);
+            }
+            put_str(printable_num);
+            put_str(" ");
+            free(passable_num);
+        }
+        else if(c <= 3)
+        {
+            passable_num = get_number_with_zeros('1', c - 1);
+            if (!passable_num)
+                return (0);
+            printable_num = find_value(ob, passable_num);
+            first_num = get_number_with_zeros(num_str[index], 0);
+            if (!first_num || !printable_num)
+            {
+                free(passable_num);
+                free(first_num);
+                return (0);
+            }
+            put_str(find_value(ob, first_num));
+            put_str(" ");
+            put_str(printable_num);
+            put_str(" ");
+            free(passable_num);
+            free(first_num);
+        }
+        else
+        {
+            j = c % 3;
+            if (j == 0)
+                j = 3;
+
+            if (!print_number_in_letters(ob, &num_str[index], j))
+                return (0);
+
+            c -= j;
+
+            if (c > 0)
+            {
+                passable_num = get_number_with_zeros('1', c);
+                if (!passable_num)
+                    return (0);
+
+                printable_num = find_value(ob, passable_num);
+                if (!printable_num)
+                {
+                    free(passable_num);
+                    return (0);
+                }
+
+                put_str(printable_num);
+                put_str(" ");
+                free(passable_num);
+            }
+            continue;
+        }
+        c--;
+    }
+    return (1);
 }
 
+int valid_input(char *str){
+    int i;
 
+    if(str[0] == '0')
+        return 0;
+
+    i = 0;
+    while(str[i] != '\0'){
+        if(!(str[i] >= '0' && str[i] <= '9')){
+            return 0;
+        }
+        i++;
+    }
+    return 1;
+}
 
 int main(int argc, char **argv)
 {
@@ -274,7 +299,7 @@ int main(int argc, char **argv)
     char *dict_file;
     char *input;
     if (argc < 2) 
-        return (put_str("Error\n"), 1);
+    return (put_str("Error\n"), 1);
     else if (argc < 3)
     {
         dict_file = "numbers.dict";
@@ -288,10 +313,14 @@ int main(int argc, char **argv)
         input = argv[2];
     }
     else
-        return (put_str("Error\n"), 1);
-        
+    return (put_str("Error\n"), 1);
+    
     // printf("%s\n","Input validation");
-
+    if(!valid_input(input)){
+        put_str("Argument error\n");
+        return -1;
+    }
+    
     fd = open(dict_file, O_RDONLY);
     if (fd < 0)
         return (1);
